@@ -8,10 +8,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+<!-- Page Loader -->
+<div id="page-loader" style="position:fixed;inset:0;background:#080e18;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
+  <svg viewBox="0 0 100 100" width="56" height="56" style="animation:spin 1.5s linear infinite"><circle cx="50" cy="50" r="48" fill="none" stroke="#F7A81B" stroke-width="3"/><circle cx="50" cy="50" r="38" fill="none" stroke="#F7A81B" stroke-width="2"/><circle cx="50" cy="50" r="12" fill="#F7A81B"/></svg>
+  <p style="color:#F7A81B;font-family:Inter,sans-serif;font-size:0.85rem;font-weight:600;letter-spacing:0.1em">LOADING ITINERARY...</p>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+</div>
 
 <!-- ===== PASSWORD SETUP MODAL (first launch) ===== -->
 <div class="modal-overlay" id="modal-password-setup">
@@ -459,6 +470,6 @@
 <!-- ===== TOAST ===== -->
 <div class="toast" id="toast"></div>
 
-<script type="module" src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
