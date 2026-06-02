@@ -37,6 +37,8 @@ let S = {
   items: [],
   editingId: null,
   filter: 'all',
+  dateFrom: '',
+  dateTo: '',
   agendaIdx: 0,
 };
 
@@ -206,7 +208,7 @@ function visitCard(v) {
       ${v.secretary?`<div class="official-item"><span class="official-role">Secretary</span><strong>${esc(v.secretary)}</strong>${v.secretaryPhone?`<span class="official-phone">📞 ${esc(v.secretaryPhone)}</span>`:''}</div>`:''}
     </div>` : '';
   const adminBtns = S.isAdmin ? `<div class="admin-card-actions"><button class="card-action-btn edit-visit-btn" data-id="${v.id}"><i data-lucide="pencil"></i></button><button class="card-action-btn del delete-item-btn" data-id="${v.id}"><i data-lucide="trash-2"></i></button></div>` : '';
-  return `<div class="visit-entry" data-id="${v.id}" data-status="${v.status}">
+  return `<div class="visit-entry" data-id="${v.id}" data-status="${v.status}" data-date="${v.date||''}">
     <div class="timeline-dot-col"><div class="timeline-dot ${v.status}"></div></div>
     <div class="visit-card ${v.status}">
       <div class="visit-card-header">
@@ -244,7 +246,27 @@ function travelCard(t) {
 function applyFilter(f) {
   S.filter = f;
   $$('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter===f));
-  $$('.visit-entry').forEach(el => el.classList.toggle('hidden-by-filter', f!=='all' && el.dataset.status!==f));
+  applyAllFilters();
+}
+
+function applyDateFilter() {
+  S.dateFrom = $('#filter-date-from').value || '';
+  S.dateTo   = $('#filter-date-to').value   || '';
+  const hasDate = S.dateFrom || S.dateTo;
+  $('#btn-clear-date').classList.toggle('hidden', !hasDate);
+  $('#date-filter-bar').classList.toggle('date-filter-active', !!hasDate);
+  applyAllFilters();
+}
+
+function applyAllFilters() {
+  $$('.visit-entry').forEach(el => {
+    const status  = el.dataset.status;
+    const date    = el.dataset.date || '';
+    const statusOk = S.filter === 'all' || status === S.filter;
+    const fromOk   = !S.dateFrom || date >= S.dateFrom;
+    const toOk     = !S.dateTo   || date <= S.dateTo;
+    el.classList.toggle('hidden-by-filter', !(statusOk && fromOk && toOk));
+  });
 }
 
 // ============================================================
@@ -396,6 +418,90 @@ function generateSharePage() {
 }
 
 // ============================================================
+// VISIT DETAIL POPUP
+// ============================================================
+function openVisitDetail(id) {
+  const v = S.items.find(i => i.id === id);
+  if (!v || v.type !== 'visit') return;
+
+  // Header
+  const badge = $('#detail-status-badge');
+  badge.textContent = v.status;
+  badge.className = 'detail-status-badge status-' + v.status;
+
+  $('#detail-club-name').textContent = v.clubName || '';
+
+  const dt = $('#detail-date-time');
+  dt.innerHTML = [
+    v.date ? `<span class="detail-date-chip"><i data-lucide="calendar"></i> ${esc(fmtDate(v.date))}</span>` : '',
+    v.time ? `<span class="detail-time-chip"><i data-lucide="clock"></i> ${esc(fmtTime(v.time))}</span>` : ''
+  ].join('');
+
+  const vn = $('#detail-venue');
+  if (v.venue || v.city) {
+    vn.innerHTML = `<i data-lucide="map-pin"></i> ${esc([v.venue, v.city].filter(Boolean).join(', '))}`;
+    vn.style.display = 'flex';
+  } else { vn.style.display = 'none'; }
+
+  // Body
+  let body = '';
+
+  // Officials
+  if (v.president || v.secretary) {
+    body += `<div class="detail-section">
+      <div class="detail-section-title"><i data-lucide="users"></i> Club Officials</div>
+      <div class="detail-officials-grid">`;
+    if (v.president) body += `
+        <div class="detail-official-card">
+          <div class="detail-official-role">President</div>
+          <div class="detail-official-name">${esc(v.president)}</div>
+          ${v.presidentPhone ? `<div class="detail-official-phone"><i data-lucide="phone"></i> ${esc(v.presidentPhone)}</div>` : ''}
+        </div>`;
+    if (v.secretary) body += `
+        <div class="detail-official-card">
+          <div class="detail-official-role">Secretary</div>
+          <div class="detail-official-name">${esc(v.secretary)}</div>
+          ${v.secretaryPhone ? `<div class="detail-official-phone"><i data-lucide="phone"></i> ${esc(v.secretaryPhone)}</div>` : ''}
+        </div>`;
+    body += `</div></div>`;
+  }
+
+  // Agenda
+  if (v.agenda && v.agenda.length) {
+    body += `<div class="detail-section">
+      <div class="detail-section-title"><i data-lucide="list-checks"></i> Programme / Agenda</div>
+      <div class="detail-agenda-table">`;
+    v.agenda.forEach(a => {
+      body += `<div class="detail-agenda-row">
+        <div class="detail-agenda-time">${esc(a.time ? fmtTime(a.time) : '')}</div>
+        <div class="detail-agenda-desc">${esc(a.desc)}</div>
+      </div>`;
+    });
+    body += `</div></div>`;
+  }
+
+  // Notes
+  if (v.notes) {
+    body += `<div class="detail-section">
+      <div class="detail-section-title"><i data-lucide="file-text"></i> Notes</div>
+      <div class="detail-notes-box">📝 ${esc(v.notes)}</div>
+    </div>`;
+  }
+
+  if (!body) body = '<p class="detail-empty">No additional details for this visit.</p>';
+
+  $('#detail-modal-body').innerHTML = body;
+
+  // Edit button (admin only)
+  const editBtn = $('#detail-edit-btn');
+  editBtn.classList.toggle('hidden', !S.isAdmin);
+  editBtn.onclick = () => { closeModal('modal-visit-detail'); openVisitModal(id); };
+
+  lucide.createIcons();
+  openModal('modal-visit-detail');
+}
+
+// ============================================================
 // INIT
 // ============================================================
 window.addEventListener('DOMContentLoaded', async function() {
@@ -460,11 +566,31 @@ window.addEventListener('DOMContentLoaded', async function() {
   $('#btn-save-travel').addEventListener('click', saveTravel);
   $('#btn-print').addEventListener('click', ()=>window.print());
 
-  // ── Delegated card clicks ──
+  // ── Date filter ──
+  $('#filter-date-from').addEventListener('change', applyDateFilter);
+  $('#filter-date-to').addEventListener('change', applyDateFilter);
+  $('#btn-clear-date').addEventListener('click', () => {
+    $('#filter-date-from').value = '';
+    $('#filter-date-to').value   = '';
+    applyDateFilter();
+  });
+
+  // ── Filter ──
+  $$('.filter-btn').forEach(b => b.addEventListener('click', () => applyFilter(b.dataset.filter)));
+
+  // ── Visit card click → detail popup ──
   document.addEventListener('click', function(e) {
-    const ev=e.target.closest('.edit-visit-btn');   if(ev){openVisitModal(ev.dataset.id);return;}
-    const dv=e.target.closest('.delete-item-btn');  if(dv){deleteItem(dv.dataset.id);return;}
-    const et=e.target.closest('.edit-travel-btn');  if(et){openTravelModal(et.dataset.id);return;}
+    const ev = e.target.closest('.edit-visit-btn');    if (ev) { openVisitModal(ev.dataset.id); return; }
+    const dv = e.target.closest('.delete-item-btn');   if (dv) { deleteItem(dv.dataset.id); return; }
+    const et = e.target.closest('.edit-travel-btn');   if (et) { openTravelModal(et.dataset.id); return; }
+    // Open detail popup when clicking visit card (not buttons)
+    const card = e.target.closest('.visit-card');
+    if (card) {
+      const entry = card.closest('.visit-entry');
+      if (entry && !e.target.closest('button')) {
+        openVisitDetail(entry.dataset.id);
+      }
+    }
   });
 
   // ── Close modals ──

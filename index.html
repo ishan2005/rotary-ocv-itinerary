@@ -223,9 +223,26 @@
     <!-- Filter bar (public) -->
     <div class="filter-bar" id="filter-bar">
       <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="confirmed">Confirmed</button>
-      <button class="filter-btn" data-filter="tentative">Tentative</button>
-      <button class="filter-btn" data-filter="completed">Completed</button>
+      <button class="filter-btn" data-filter="confirmed">✅ Confirmed</button>
+      <button class="filter-btn" data-filter="tentative">⏳ Tentative</button>
+      <button class="filter-btn" data-filter="completed">🏁 Completed</button>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="date-filter-bar" id="date-filter-bar">
+      <div class="date-filter-label"><i data-lucide="calendar"></i> Filter by Date</div>
+      <div class="date-filter-inputs">
+        <div class="date-filter-group">
+          <label for="filter-date-from">From</label>
+          <input type="date" id="filter-date-from" />
+        </div>
+        <div class="date-filter-sep">—</div>
+        <div class="date-filter-group">
+          <label for="filter-date-to">To</label>
+          <input type="date" id="filter-date-to" />
+        </div>
+        <button class="date-filter-clear hidden" id="btn-clear-date"><i data-lucide="x"></i> Clear</button>
+      </div>
     </div>
 
     <!-- Timeline container (rendered by JS) -->
@@ -466,6 +483,28 @@
       <button class="btn-primary" id="btn-save-governor">
         <i data-lucide="save"></i> Save Profile
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VISIT DETAIL MODAL ===== -->
+<div class="modal-overlay" id="modal-visit-detail">
+  <div class="modal modal-lg" id="visit-detail-modal-inner">
+    <div class="modal-header detail-modal-header">
+      <div class="detail-header-top">
+        <span class="detail-status-badge" id="detail-status-badge"></span>
+        <button class="modal-close-btn" data-close="modal-visit-detail"><i data-lucide="x"></i></button>
+      </div>
+      <div class="detail-club-name" id="detail-club-name"></div>
+      <div class="detail-date-time" id="detail-date-time"></div>
+      <div class="detail-venue" id="detail-venue"></div>
+    </div>
+    <div class="modal-body" id="detail-modal-body">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="modal-footer detail-modal-footer" id="detail-modal-footer">
+      <button class="btn-secondary" data-close="modal-visit-detail"><i data-lucide="x"></i> Close</button>
+      <button class="btn-primary hidden" id="detail-edit-btn"><i data-lucide="pencil"></i> Edit Visit</button>
     </div>
   </div>
 </div>

@@ -845,6 +845,179 @@ input::placeholder, textarea::placeholder { color: var(--tm); }
 .toast.error   { border-color: rgba(239,68,68,0.4); color: var(--cancelled); }
 
 /* ============================================================
+   DATE FILTER BAR
+   ============================================================ */
+.date-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--glass);
+  border: 1px solid var(--gb);
+  border-radius: var(--r2);
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.date-filter-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--gold); text-transform: uppercase;
+  letter-spacing: 0.08em; flex-shrink: 0;
+}
+.date-filter-label svg { width: 13px; height: 13px; }
+.date-filter-inputs {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; flex: 1;
+}
+.date-filter-group {
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.date-filter-group label {
+  font-size: 0.68rem; font-weight: 600; color: var(--ts); flex-shrink: 0;
+}
+.date-filter-group input[type=date] {
+  padding: 0.32rem 0.6rem;
+  font-size: 0.78rem;
+  border-radius: var(--r);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--gb2);
+  color: var(--tp);
+  width: auto;
+  cursor: pointer;
+}
+.date-filter-group input[type=date]:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(247,168,27,0.12);
+}
+.date-filter-sep { color: var(--tm); font-size: 0.85rem; font-weight: 300; }
+.date-filter-clear {
+  display: flex; align-items: center; gap: 4px;
+  padding: 0.3rem 0.65rem;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--r);
+  color: var(--cancelled);
+  font-size: 0.7rem; font-weight: 700;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.date-filter-clear svg { width: 10px; height: 10px; }
+.date-filter-clear:hover { background: rgba(239,68,68,0.25); }
+.date-filter-active { border-color: rgba(247,168,27,0.45); background: rgba(247,168,27,0.05); }
+
+/* ============================================================
+   VISIT DETAIL MODAL
+   ============================================================ */
+.detail-modal-header {
+  padding: 1rem 1.25rem 1.1rem !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+  background: linear-gradient(135deg, rgba(0,59,113,0.5), rgba(0,31,69,0.7)) !important;
+  border-bottom: 1px solid var(--navy-gb) !important;
+  position: relative;
+  overflow: hidden;
+}
+.detail-modal-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 10%; right: 10%;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.detail-header-top {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; margin-bottom: 0.65rem;
+}
+.detail-status-badge {
+  font-size: 0.62rem; font-weight: 700;
+  padding: 0.22rem 0.7rem;
+  border-radius: 99px;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.detail-club-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-weight: 700; color: var(--tp);
+  line-height: 1.2; margin-bottom: 0.5rem;
+}
+.detail-date-time {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+.detail-date-chip, .detail-time-chip {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.78rem; font-weight: 600;
+  padding: 0.22rem 0.65rem;
+  border-radius: 99px;
+}
+.detail-date-chip { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(247,168,27,0.3); }
+.detail-time-chip { background: var(--glass); color: var(--ts); border: 1px solid var(--gb); }
+.detail-date-chip svg, .detail-time-chip svg { width: 12px; height: 12px; }
+.detail-venue {
+  font-size: 0.75rem; color: rgba(255,255,255,0.55);
+  display: flex; align-items: center; gap: 5px;
+}
+.detail-venue svg { width: 12px; height: 12px; color: var(--gold); flex-shrink: 0; }
+
+/* Detail body sections */
+.detail-section {
+  margin-bottom: 1.1rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--gb);
+}
+.detail-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.detail-section-title {
+  font-size: 0.65rem; font-weight: 700; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin-bottom: 0.65rem;
+  display: flex; align-items: center; gap: 5px;
+}
+.detail-section-title svg { width: 11px; height: 11px; }
+.detail-officials-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+}
+.detail-official-card {
+  background: var(--glass);
+  border: 1px solid var(--gb);
+  border-radius: var(--r);
+  padding: 0.7rem 0.875rem;
+}
+.detail-official-role {
+  font-size: 0.6rem; font-weight: 700; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.25rem;
+}
+.detail-official-name { font-size: 0.88rem; font-weight: 600; color: var(--tp); margin-bottom: 0.2rem; }
+.detail-official-phone {
+  font-size: 0.75rem; color: var(--ts);
+  display: flex; align-items: center; gap: 4px;
+}
+.detail-agenda-table { width: 100%; border-collapse: collapse; }
+.detail-agenda-row {
+  display: flex; gap: 0.875rem; align-items: baseline;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.82rem;
+}
+.detail-agenda-row:last-child { border-bottom: none; }
+.detail-agenda-time {
+  font-size: 0.73rem; font-weight: 700; color: var(--gold);
+  min-width: 72px; flex-shrink: 0;
+}
+.detail-agenda-desc { color: var(--ts); line-height: 1.45; }
+.detail-notes-box {
+  background: rgba(247,168,27,0.06);
+  border: 1px solid rgba(247,168,27,0.2);
+  border-radius: var(--r);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.8rem; color: var(--ts); font-style: italic; line-height: 1.5;
+}
+.detail-modal-footer { justify-content: flex-end; }
+.detail-empty { font-size: 0.78rem; color: var(--tm); font-style: italic; }
+
+/* Clickable visit cards */
+.visit-card { cursor: pointer; }
+.visit-card:active { transform: scale(0.99); }
+
+/* ============================================================
    PRINT
    ============================================================ */
 @media print {
