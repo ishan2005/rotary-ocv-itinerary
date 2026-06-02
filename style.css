@@ -668,7 +668,7 @@ body::after {
    ============================================ */
 .app-footer {
   border-top: 1px solid var(--glass-border);
-  padding: 2rem 1.25rem;
+  padding: 2.5rem 1.25rem;
   text-align: center;
 }
 .footer-content { max-width: var(--max-w); margin: 0 auto; }
@@ -678,9 +678,42 @@ body::after {
   font-style: italic;
   color: var(--rotary-gold);
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
 }
-.footer-prepared { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+.footer-prepared-by {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: var(--navy-glass);
+  border: 1px solid var(--navy-glass-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 2rem;
+  margin-bottom: 1rem;
+}
+.footer-prepared-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.footer-prepared-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.footer-prepared-role {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rotary-gold);
+}
+.footer-prepared-club {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
 .footer-print-info { font-size: 0.7rem; color: var(--text-muted); }
 
 /* ============================================
