@@ -732,10 +732,7 @@ function handlePhotoUpload(file) {
 function init() {
   loadData();
 
-  // ── Password Setup (first launch) ──
-  if (!state.isSetup) {
-    openModal('modal-password-setup');
-  }
+  // ── No auto-popup on load: password only shown when Admin button is clicked ──
 
   $('#btn-set-password').addEventListener('click', () => {
     const p1 = $('#setup-password').value;
@@ -753,7 +750,13 @@ function init() {
   $('#btn-admin-toggle').addEventListener('click', () => {
     if (state.isAdmin) {
       setAdminMode(false);
+    } else if (!state.isSetup) {
+      // First time: show password setup modal
+      $('#setup-password').value = '';
+      $('#setup-password-confirm').value = '';
+      openModal('modal-password-setup');
     } else {
+      // Already set up: show login modal
       $('#login-password').value = '';
       openModal('modal-admin-login');
       setTimeout(() => $('#login-password').focus(), 300);
