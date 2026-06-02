@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Rotary OCV Itinerary — District Governor's Official Club Visit Schedule</title>
+  <meta name="description" content="Official Club Visit (OCV) Itinerary for the Rotary District Governor. View the complete schedule of club visits, programs, and travel plans." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== PASSWORD SETUP MODAL (first launch) ===== -->
+<div class="modal-overlay" id="modal-password-setup">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-icon">🔐</div>
+      <h3>Set Admin Password</h3>
+      <p class="modal-subtitle">This password protects editing access. Share it only with trusted people.</p>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="setup-password">Create Password</label>
+        <input type="password" id="setup-password" placeholder="Enter a strong password" />
+      </div>
+      <div class="form-group">
+        <label for="setup-password-confirm">Confirm Password</label>
+        <input type="password" id="setup-password-confirm" placeholder="Re-enter password" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary full-width" id="btn-set-password">
+        <i data-lucide="shield-check"></i> Set Password & Continue
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN LOGIN MODAL ===== -->
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-icon">🔑</div>
+      <h3>Admin Login</h3>
+      <p class="modal-subtitle">Enter the password to edit the itinerary</p>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="Enter admin password" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-login-cancel">Cancel</button>
+      <button class="btn-primary" id="btn-login-submit">
+        <i data-lucide="log-in"></i> Login
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header" id="app-header">
+    <div class="header-content">
+      <div class="header-brand">
+        <div class="rotary-logo" aria-label="Rotary International">
+          <svg viewBox="0 0 100 100" width="44" height="44">
+            <circle cx="50" cy="50" r="48" fill="none" stroke="#F7A81B" stroke-width="3"/>
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#F7A81B" stroke-width="2"/>
+            <circle cx="50" cy="50" r="12" fill="#F7A81B"/>
+            <!-- Gear teeth -->
+            <g fill="#F7A81B">
+              <rect x="47" y="2" width="6" height="12" rx="2"/>
+              <rect x="47" y="86" width="6" height="12" rx="2"/>
+              <rect x="2" y="47" width="12" height="6" rx="2"/>
+              <rect x="86" y="47" width="12" height="6" rx="2"/>
+              <rect x="14" y="14" width="6" height="12" rx="2" transform="rotate(45 17 20)"/>
+              <rect x="80" y="14" width="6" height="12" rx="2" transform="rotate(-45 83 20)"/>
+              <rect x="14" y="74" width="6" height="12" rx="2" transform="rotate(-45 17 80)"/>
+              <rect x="80" y="74" width="6" height="12" rx="2" transform="rotate(45 83 80)"/>
+            </g>
+          </svg>
+        </div>
+        <div class="header-text">
+          <h1 class="header-title">Official Club Visit</h1>
+          <p class="header-subtitle" id="header-subtitle">District Governor's Itinerary</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-print" title="Print Itinerary" aria-label="Print">
+          <i data-lucide="printer"></i>
+        </button>
+        <button class="admin-login-btn" id="btn-admin-toggle" title="Admin Login" aria-label="Admin access">
+          <i data-lucide="lock"></i>
+          <span id="admin-label">Admin</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ADMIN TOOLBAR ===== -->
+  <div class="admin-toolbar hidden" id="admin-toolbar">
+    <div class="toolbar-content">
+      <div class="toolbar-left">
+        <button class="toolbar-btn" id="btn-edit-governor">
+          <i data-lucide="user-cog"></i> Governor Profile
+        </button>
+        <button class="toolbar-btn primary" id="btn-add-visit">
+          <i data-lucide="plus-circle"></i> Add Club Visit
+        </button>
+        <button class="toolbar-btn" id="btn-add-travel">
+          <i data-lucide="car"></i> Add Travel
+        </button>
+      </div>
+      <div class="toolbar-right">
+        <button class="toolbar-btn" id="btn-share-page" title="Generate Shareable Page">
+          <i data-lucide="share-2"></i> Share
+        </button>
+        <button class="toolbar-btn" id="btn-export-json" title="Export Backup">
+          <i data-lucide="download"></i> Export
+        </button>
+        <button class="toolbar-btn" id="btn-import-json" title="Import Backup">
+          <i data-lucide="upload"></i> Import
+        </button>
+        <input type="file" id="import-file-input" accept=".json,.ocv" style="display:none" />
+        <button class="toolbar-btn danger" id="btn-admin-logout">
+          <i data-lucide="log-out"></i> Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GOVERNOR PROFILE SECTION ===== -->
+  <section class="governor-section" id="governor-section">
+    <div class="governor-card">
+      <div class="governor-photo-container">
+        <div class="governor-photo" id="governor-photo">
+          <i data-lucide="user" class="governor-photo-placeholder"></i>
+        </div>
+      </div>
+      <div class="governor-info">
+        <p class="governor-designation" id="governor-designation">District Governor</p>
+        <h2 class="governor-name" id="governor-name">Governor Name</h2>
+        <div class="governor-meta">
+          <span class="governor-meta-item" id="governor-district">
+            <i data-lucide="map"></i> District
+          </span>
+          <span class="governor-meta-item" id="governor-year">
+            <i data-lucide="calendar"></i> RI Year
+          </span>
+        </div>
+      </div>
+      <div class="governor-rotary-badge">
+        <span>Rotary</span>
+        <span class="ri-text">International</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== QUICK STATS ===== -->
+  <section class="stats-section">
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon"><i data-lucide="building-2"></i></div>
+        <div class="stat-info">
+          <span class="stat-num" id="stat-clubs">0</span>
+          <span class="stat-label">Club Visits</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon confirmed"><i data-lucide="check-circle"></i></div>
+        <div class="stat-info">
+          <span class="stat-num" id="stat-confirmed">0</span>
+          <span class="stat-label">Confirmed</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon pending"><i data-lucide="clock"></i></div>
+        <div class="stat-info">
+          <span class="stat-num" id="stat-tentative">0</span>
+          <span class="stat-label">Tentative</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon completed"><i data-lucide="flag"></i></div>
+        <div class="stat-info">
+          <span class="stat-num" id="stat-completed">0</span>
+          <span class="stat-label">Completed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ITINERARY TIMELINE ===== -->
+  <section class="itinerary-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i data-lucide="calendar-range"></i>
+        Official Visit Schedule
+      </h2>
+    </div>
+
+    <!-- Filter bar (public) -->
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="confirmed">Confirmed</button>
+      <button class="filter-btn" data-filter="tentative">Tentative</button>
+      <button class="filter-btn" data-filter="completed">Completed</button>
+    </div>
+
+    <!-- Timeline container (rendered by JS) -->
+    <div class="timeline" id="timeline">
+      <!-- Visit and travel cards rendered here -->
+      <div class="empty-state" id="empty-itinerary">
+        <div class="empty-icon">📋</div>
+        <h4>No club visits scheduled yet</h4>
+        <p>The itinerary will appear here once visits are added.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="app-footer" id="app-footer">
+    <div class="footer-content">
+      <div class="footer-rotary">
+        <span class="footer-motto">"Service Above Self"</span>
+      </div>
+      <p class="footer-prepared" id="footer-prepared">Prepared with ❤️ for Rotary</p>
+      <p class="footer-print-info">Print this page or share the generated file for offline access</p>
+    </div>
+  </footer>
+
+</div><!-- end #app -->
+
+
+<!-- ===== MODALS ===== -->
+
+<!-- ── Add/Edit Club Visit Modal ── -->
+<div class="modal-overlay" id="modal-visit">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="modal-visit-title">Add Club Visit</h3>
+      <button class="modal-close-btn" data-close="modal-visit"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section-label">Club Details</div>
+      <div class="form-group">
+        <label for="visit-club-name">Club Name *</label>
+        <input type="text" id="visit-club-name" placeholder="e.g. Rotary Club of Jaipur Central" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="visit-city">City / Location *</label>
+          <input type="text" id="visit-city" placeholder="e.g. Jaipur" />
+        </div>
+        <div class="form-group">
+          <label for="visit-venue">Venue</label>
+          <input type="text" id="visit-venue" placeholder="e.g. Hotel Marriott, Ballroom" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="visit-date">Date *</label>
+          <input type="date" id="visit-date" />
+        </div>
+        <div class="form-group">
+          <label for="visit-time">Time *</label>
+          <input type="time" id="visit-time" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="visit-status">Status</label>
+        <select id="visit-status">
+          <option value="confirmed">✅ Confirmed</option>
+          <option value="tentative">⏳ Tentative</option>
+          <option value="completed">🏁 Completed</option>
+          <option value="cancelled">❌ Cancelled</option>
+        </select>
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-section-label">Club Officials</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="visit-president">President Name</label>
+          <input type="text" id="visit-president" placeholder="Rtn. Name" />
+        </div>
+        <div class="form-group">
+          <label for="visit-president-phone">President Phone</label>
+          <input type="tel" id="visit-president-phone" placeholder="+91 98..." />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="visit-secretary">Secretary Name</label>
+          <input type="text" id="visit-secretary" placeholder="Rtn. Name" />
+        </div>
+        <div class="form-group">
+          <label for="visit-secretary-phone">Secretary Phone</label>
+          <input type="tel" id="visit-secretary-phone" placeholder="+91 98..." />
+        </div>
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-section-label">
+        Program / Agenda
+        <button class="add-agenda-btn" id="btn-add-agenda-item" type="button">
+          <i data-lucide="plus"></i> Add Item
+        </button>
+      </div>
+      <div class="agenda-items-container" id="agenda-items-container">
+        <!-- Dynamic agenda items added here by JS -->
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-group">
+        <label for="visit-notes">Notes / Special Instructions</label>
+        <textarea id="visit-notes" placeholder="Dress code, special requests, arrangements..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" data-close="modal-visit">Cancel</button>
+      <button class="btn-primary" id="btn-save-visit">
+        <i data-lucide="save"></i> Save Visit
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add/Edit Travel Modal ── -->
+<div class="modal-overlay" id="modal-travel">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-travel-title">Add Travel Plan</h3>
+      <button class="modal-close-btn" data-close="modal-travel"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="travel-from">From *</label>
+          <input type="text" id="travel-from" placeholder="e.g. Jaipur" />
+        </div>
+        <div class="form-group">
+          <label for="travel-to">To *</label>
+          <input type="text" id="travel-to" placeholder="e.g. Udaipur" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="travel-date">Date *</label>
+          <input type="date" id="travel-date" />
+        </div>
+        <div class="form-group">
+          <label for="travel-time">Departure Time</label>
+          <input type="time" id="travel-time" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="travel-mode">Mode of Travel</label>
+          <select id="travel-mode">
+            <option value="car">🚗 Car</option>
+            <option value="train">🚂 Train</option>
+            <option value="flight">✈️ Flight</option>
+            <option value="bus">🚌 Bus</option>
+            <option value="other">🚐 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="travel-duration">Duration</label>
+          <input type="text" id="travel-duration" placeholder="e.g. 3 hrs 30 min" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="travel-distance">Distance</label>
+          <input type="text" id="travel-distance" placeholder="e.g. 250 km" />
+        </div>
+        <div class="form-group">
+          <label for="travel-contact">Driver / Contact</label>
+          <input type="text" id="travel-contact" placeholder="Name & phone" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="travel-notes">Notes</label>
+        <textarea id="travel-notes" placeholder="Train PNR, flight details, pickup point..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" data-close="modal-travel">Cancel</button>
+      <button class="btn-primary" id="btn-save-travel">
+        <i data-lucide="save"></i> Save Travel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Edit Governor Profile Modal ── -->
+<div class="modal-overlay" id="modal-governor">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Governor's Profile</h3>
+      <button class="modal-close-btn" data-close="modal-governor"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="gov-name">Full Name *</label>
+        <input type="text" id="gov-name" placeholder="e.g. Rtn. Rajesh Kumar Sharma" />
+      </div>
+      <div class="form-group">
+        <label for="gov-designation">Designation</label>
+        <input type="text" id="gov-designation" placeholder="e.g. District Governor" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="gov-district">District</label>
+          <input type="text" id="gov-district" placeholder="e.g. District 3060" />
+        </div>
+        <div class="form-group">
+          <label for="gov-year">RI Year</label>
+          <input type="text" id="gov-year" placeholder="e.g. 2025-26" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="gov-theme">RI Theme / Motto</label>
+        <input type="text" id="gov-theme" placeholder="e.g. Service Above Self" />
+      </div>
+      <div class="form-group">
+        <label for="gov-photo-input">Photo</label>
+        <div class="photo-upload-area" id="gov-photo-upload">
+          <i data-lucide="camera"></i>
+          <span>Click to upload photo</span>
+          <input type="file" id="gov-photo-input" accept="image/*" style="display:none" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="gov-contact">Contact (optional, admin-only)</label>
+        <input type="text" id="gov-contact" placeholder="Phone / Email" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" data-close="modal-governor">Cancel</button>
+      <button class="btn-primary" id="btn-save-governor">
+        <i data-lucide="save"></i> Save Profile
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
