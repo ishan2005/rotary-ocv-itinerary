@@ -96,7 +96,7 @@ function showLoading(on) {
 // AUTH
 // ============================================================
 async function setupPassword(pwd) {
-  const hash = await sha256('rotary2025_' + pwd);
+  const hash = await sha256(pwd);
   await saveData({ pwdHash: hash, isSetup: true });
   S.isSetup = true;
 }
@@ -107,7 +107,7 @@ async function verifyPassword(pwd) {
     if (!snap.exists) return false;
     const stored = snap.data().pwdHash;
     if (!stored) return false;
-    const entered = await sha256('rotary2025_' + pwd);
+    const entered = await sha256(pwd);
     return stored === entered;
   } catch { return false; }
 }
